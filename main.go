@@ -22,7 +22,6 @@ import (
 )
 
 var (
-	cachePeriodSetting int
 	cachePeriod time.Duration
 ) 
 
@@ -185,8 +184,7 @@ func init() {
 	errorLogger = log.With(errorLogger, "timestamp", log.DefaultTimestampUTC)
 	errorLogger = log.With(errorLogger, "severity", "error")
 	prometheus.MustRegister(prometheus.NewBuildInfoCollector())
-	flag.IntVar(&cachePeriodSetting, "cache-period", 1, "The period of time the collector will reuse the results of docker inspect before polling again" ) 
-	cachePeriod = time.Duration(cachePeriodSetting) * time.Second
+	cachePeriod = time.Duration(*flag.Int("cache-period", 1, "The period of time the collector will reuse the results of docker inspect before polling again" )) * time.Second
 }
 
 func main() {
