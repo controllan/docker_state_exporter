@@ -21,10 +21,10 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-const (
-	// cachePeriod indicates the period of time the collector will reuse the results of docker inspect.
-	cachePeriod = 1 * time.Second
-)
+var (
+	cachePeriodSetting int
+	cachePeriod time.Duration
+) 
 
 type dockerHealthCollector struct {
 	mu                 sync.Mutex
@@ -185,6 +185,8 @@ func init() {
 	errorLogger = log.With(errorLogger, "timestamp", log.DefaultTimestampUTC)
 	errorLogger = log.With(errorLogger, "severity", "error")
 	prometheus.MustRegister(prometheus.NewBuildInfoCollector())
+	flag.IntVar(&cachePeriodSetting, "cache-period", 1, "The period of time the collector will reuse the results of docker inspect before polling again" ) 
+	cachePeriod = time.Duration(cachePeriodSetting) * time.Second
 }
 
 func main() {
