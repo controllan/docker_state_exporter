@@ -21,7 +21,7 @@ For Docker run.
 sudo docker run -d \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -p 8080:8080 \
-  karugaru/docker_state_exporter \
+  $REPO/docker_state_exporter \
   -listen-address=:8080
 ```
 
@@ -33,7 +33,7 @@ version: '3.8'
 
 services:
   docker_state_exporter:
-    image: karugaru/docker_state_exporter
+    image: $REPO/docker_state_exporter
     volumes:
       - type: bind
         source: /var/run/docker.sock
@@ -59,24 +59,18 @@ This exporter also exports the standard
 [Go Collector](https://pkg.go.dev/github.com/prometheus/client_golang/prometheus#NewGoCollector)
 and [Process Collector](https://pkg.go.dev/github.com/prometheus/client_golang/prometheus#NewProcessCollector).
 
-## Caution
+## Performance
 
-This exporter will do a docker inspect every time prometheus pulls.\
-If a large number of requests are made, there will be performance issues. (I think. Not verified.)\
-So, this app caches the result of docker inspect for 1 second.
-So, please note that if you set the scrape_interval of prometheus to less than one second, you may get the same result back.
+The polling of docker inspect commands is set to every one second. 
 
-## Development building and running
+TODO: Allow for polling interval customization.
 
-I am running this application on Docker (linux/amd64).
-I have not tested it in any other environment.
-
-### Build
+### Build the go binary and container
 
 ```bash
-git clone https://github.com/karugaru/docker_state_exporter
+git clone https://github.com/AdaptiveConsulting/docker_state_exporter
 cd docker_state_exporter
-sudo docker build -t docker_state_exporter_test .
+make all
 ```
 
 ### Run
