@@ -8,7 +8,7 @@ COPY *.go go.mod go.sum $GOPATH/src/docker_state_exporter/
 
 WORKDIR $GOPATH/src/docker_state_exporter/
 
-RUN go mod download all
+RUN go mod vendor -v
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/docker_state_exporter
 
 FROM alpine:3

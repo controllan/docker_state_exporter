@@ -5,6 +5,7 @@
 *.iws
 *.iml
 out/
+vendor/ 
 
 ### Node template
 # Logs
