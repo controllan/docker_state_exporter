@@ -3,7 +3,7 @@ module github.com/noopdles/docker_state_exporter
 go 1.17
 
 require (
-	github.com/docker/docker v20.10.10+incompatible
+	github.com/docker/docker v17.12.0-ce-rc1.0.20200618181300-9dc6525e6118+incompatible
 	github.com/go-kit/kit v0.12.0
 	github.com/prometheus/client_golang v1.11.0
 )
@@ -21,6 +21,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
+	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
