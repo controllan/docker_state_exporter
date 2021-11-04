@@ -70,7 +70,7 @@ TODO: Allow for polling interval customization.
 ```bash
 git clone https://github.com/AdaptiveConsulting/docker_state_exporter
 cd docker_state_exporter
-make all
+docker build . 
 ```
 
 ### Run
