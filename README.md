@@ -52,8 +52,11 @@ This exporter will export the following metrics.
 - container_state_startedat
 - container_state_finishedat
 - container_restartcount
+- container_combined_status
 
 These metrics will be the same as the results of docker inspect.
+
+The container_combined_status will contain the general and health status of the container in one metric.
 
 This exporter also exports the standard
 [Go Collector](https://pkg.go.dev/github.com/prometheus/client_golang/prometheus#NewGoCollector)

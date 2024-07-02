@@ -63,6 +63,9 @@ var (
 	restartcountDesc = descSource{
 		"container_restartcount",
 		"Number of times the container has been restarted"}
+	combinedStatusDesc  = descSource{
+		namespace + "combined_status",
+		"Combined container status and health status."}
 )
 
 func (c *dockerHealthCollector) Describe(ch chan<- *prometheus.Desc) {
@@ -72,6 +75,7 @@ func (c *dockerHealthCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- startedatDesc.Desc(nil)
 	ch <- finishedatDesc.Desc(nil)
 	ch <- restartcountDesc.Desc(nil)
+	ch <- combinedStatusDesc.Desc(nil)
 }
 
 func (c *dockerHealthCollector) Collect(ch chan<- prometheus.Metric) {
@@ -117,13 +121,20 @@ func (c *dockerHealthCollector) collectMetrics(ch chan<- prometheus.Metric) {
 
 		for _, lv := range []string{"none", "starting", "healthy", "unhealthy"} {
 			tmpLabels := mapcopy(labels)
-			tmpLabels["status"] = lv
+			tmpLabels["health_status"] = lv
 			ch <- prometheus.MustNewConstMetric(healthStatusDesc.Desc(tmpLabels), prometheus.GaugeValue, b2f(info.State.Health.Status == lv))
 		}
 		for _, lv := range []string{"paused", "restarting", "running", "removing", "dead", "created", "exited"} {
 			tmpLabels := mapcopy(labels)
 			tmpLabels["status"] = lv
 			ch <- prometheus.MustNewConstMetric(statusDesc.Desc(tmpLabels), prometheus.GaugeValue, b2f(info.State.Status == lv))
+			// Add combined status metric
+			for _, healthLv := range []string{"none", "starting", "healthy", "unhealthy"} {
+				combinedLabels := mapcopy(labels)
+				combinedLabels["status"] = lv
+				combinedLabels["health_status"] = healthLv
+				ch <- prometheus.MustNewConstMetric(combinedStatusDesc.Desc(combinedLabels), prometheus.GaugeValue, b2f(info.State.Status == lv && info.State.Health.Status == healthLv))
+			}
 		}
 		ch <- prometheus.MustNewConstMetric(oomkilledDesc.Desc(labels), prometheus.GaugeValue, b2f(info.State.OOMKilled))
 		startedat, err := time.Parse(time.RFC3339Nano, info.State.StartedAt)
