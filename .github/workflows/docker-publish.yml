@@ -41,7 +41,7 @@ jobs:
       matrix:
         os: [ arm64, x64 ]
     runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
-    name: "Build docker image set ${{ steps.meta.outputs.tags || inputs.tags }} with labels ${{ steps.meta.outputs.labels || inputs.labels }} for ${{ matrix.platform }} [${{ vars.CONTAINER_REGISTRY_USER }}@${{ vars.CONTAINER_REGISTRY_URL }}]"
+    name: "Build docker image for ${{ matrix.platform }} [${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}]"
     permissions:
       contents: read
       packages: write
