@@ -77,6 +77,6 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: ${{ (github.event_name != 'pull_request' && inputs.dry_run == false) || inputs.force_docker_push }}
+          push: ${{ (github.event_name != 'pull_request' || inputs.force_docker_push) && inputs.dry_run == false  }}
           tags: ${{ steps.meta.outputs.tags || inputs.tags }}
           labels: ${{ steps.meta.outputs.labels || inputs.labels }}
