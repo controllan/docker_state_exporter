@@ -41,7 +41,7 @@ jobs:
       matrix:
         os: [ arm64, x64 ]
     runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
-    name: "Build docker image for ${{ matrix.platform }} [${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}, dry_run=${{ inputs.dry_run }}]"
+    name: "Build docker image for ${{ matrix.platform }} [dry_run=${{ inputs.dry_run }}]"
     permissions:
       contents: read
       packages: write
@@ -69,7 +69,7 @@ jobs:
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
-      - name: Build and push Docker image
+      - name: Build and push Docker image [${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}]
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
