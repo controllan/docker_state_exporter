@@ -17,7 +17,7 @@ on:
       dry_run:
         type: boolean
         default: false
-        description: "Parameter to enable a dry-run (run without changes)"
+        description: "enable dry run"
         required: false
       tags:
         type: string
@@ -28,6 +28,11 @@ on:
         type: string
         default: ""
         description: "The list of labels to be added to the image"
+        required: false
+      force_docker_push:
+        type: boolean
+        default: false
+        description: "force docker push"
         required: false
 
 jobs:
@@ -72,6 +77,6 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' && inputs.dry_run == false }}
+          push: ${{ (github.event_name != 'pull_request' && inputs.dry_run == false) || inputs.force_docker_push }}
           tags: ${{ steps.meta.outputs.tags || inputs.tags }}
           labels: ${{ steps.meta.outputs.labels || inputs.labels }}
