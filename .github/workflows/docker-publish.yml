@@ -17,7 +17,7 @@ on:
       dry_run:
         type: boolean
         default: false
-        description: "Parameter to enable a dry-run (run without changes)"
+        description: "enable dry run"
         required: false
       tags:
         type: string
@@ -29,12 +29,23 @@ on:
         default: ""
         description: "The list of labels to be added to the image"
         required: false
+      force_docker_push:
+        type: boolean
+        default: false
+        description: "force docker push"
+        required: false
+
+run-name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
 
 jobs:
   build:
     strategy:
       matrix:
-        os: [ arm64, amd64 ]
+        include:
+          - os: "amd64"
+            image_suffix: ""
+          - os: "arm64"
+            image_suffix: "-arm64"
     runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
     name: "Build docker image for ${{ matrix.os }} [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
     permissions:
@@ -71,7 +82,7 @@ jobs:
         uses: docker/build-push-action@v6.7.0
         with:
           context: .
-          platforms: linux/${{ matrix.os }}
-          push: ${{ github.event_name != 'pull_request' && inputs.dry_run == false }}
-          tags: ${{ steps.meta.outputs.tags || inputs.tags }}
+          platforms: 'linux/${{ matrix.os }}'
+          push: ${{ (github.event_name != 'pull_request' || inputs.force_docker_push) && inputs.dry_run == false  }}
+          tags: '${{ steps.meta.outputs.tags || inputs.tags }}${{ matrix.image_suffix }}'
           labels: ${{ steps.meta.outputs.labels || inputs.labels }}
