@@ -71,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v6.7.0
         with:
           context: .
-          platforms: linux/${{ matrix.os }}
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' && inputs.dry_run == false }}
           tags: ${{ steps.meta.outputs.tags || inputs.tags }}
           labels: ${{ steps.meta.outputs.labels || inputs.labels }}
