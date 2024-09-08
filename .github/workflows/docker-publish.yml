@@ -37,15 +37,15 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ arm64, amd64 ]
-    runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
-    name: "Build docker image for ${{ matrix.os }} [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
+    runs-on: [ self-hosted, ubuntu-latest, '${{ vars.RUNNER_LABEL_NAME }}' ]
+    name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
     permissions:
       contents: read
       packages: write
     steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
