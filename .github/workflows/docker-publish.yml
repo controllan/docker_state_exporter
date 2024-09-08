@@ -35,19 +35,23 @@ on:
         description: "force docker push"
         required: false
 
-run-name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
+run-name: "Build docker image for ${{ matrix.os }} [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
 
 jobs:
   build:
-    runs-on: [ self-hosted, ubuntu-latest, '${{ vars.RUNNER_LABEL_NAME }}' ]
-    name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
+    strategy:
+      matrix:
+        include:
+          - os: "amd64"
+            image_suffix: ""
+          - os: "arm64"
+            image_suffix: "-arm64"
+    runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
+    name: "Build docker image for ${{ matrix.os }} [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
     permissions:
       contents: read
       packages: write
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -78,7 +82,7 @@ jobs:
         uses: docker/build-push-action@v6.7.0
         with:
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: 'linux/${{ matrix.os }}'
           push: ${{ (github.event_name != 'pull_request' || inputs.force_docker_push) && inputs.dry_run == false  }}
-          tags: ${{ steps.meta.outputs.tags || inputs.tags }}
+          tags: '${{ steps.meta.outputs.tags || inputs.tags }}${{ matrix.image_suffix }}'
           labels: ${{ steps.meta.outputs.labels || inputs.labels }}
