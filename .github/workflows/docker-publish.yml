@@ -32,20 +32,20 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        os: [ ARM64, X64 ]
-    runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
-    name: "Build docker image for ${{ matrix.os }} [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
+    runs-on: [ self-hosted, ubuntu-latest ]
+    name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
     permissions:
       contents: read
       packages: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.1.7
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.7
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
@@ -71,6 +71,7 @@ jobs:
         uses: docker/build-push-action@v6.7.0
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' && inputs.dry_run == false }}
           tags: ${{ steps.meta.outputs.tags || inputs.tags }}
           labels: ${{ steps.meta.outputs.labels || inputs.labels }}
