@@ -3,7 +3,7 @@ module github.com/AdaptiveConsulting/docker_state_exporter
 go 1.22
 
 require (
-	github.com/docker/docker v25.0.3+incompatible
+	github.com/docker/docker v25.0.6+incompatible
 	github.com/go-kit/kit v0.13.0
 	github.com/prometheus/client_golang v1.18.0
 )
