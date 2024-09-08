@@ -71,3 +71,5 @@ build/
 
 ### Direnv
 .direnv/
+
+.idea/

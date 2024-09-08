@@ -12,21 +12,39 @@ on:
     tags: [ 'v*.*.*' ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        type: boolean
+        default: false
+        description: "Parameter to enable a dry-run (run without changes)"
+        required: false
+      tags:
+        type: string
+        default: ""
+        description: "The list of tags to be added to the image"
+        required: false
+      labels:
+        type: string
+        default: ""
+        description: "The list of labels to be added to the image"
+        required: false
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   IMAGE_NAME: pat-git/docker-state-exporter
 
-
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ arm64, x64 ]
+    runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
+    name: "Build docker image set ${{ steps.meta.outputs.tags || inputs.tags }} with labels ${{ steps.meta.outputs.labels || inputs.labels }} for ${{ matrix.platform }} [${{ vars.CONTAINER_REGISTRY_USER }}@${{ vars.CONTAINER_REGISTRY_URL }}]"
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -55,6 +73,6 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: ${{ github.event_name != 'pull_request' && inputs.dry_run == false }}
+          tags: ${{ steps.meta.outputs.tags || inputs.tags }}
+          labels: ${{ steps.meta.outputs.labels || inputs.labels }}
