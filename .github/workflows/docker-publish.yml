@@ -41,7 +41,7 @@ jobs:
       matrix:
         os: [ arm64, x64 ]
     runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
-    name: "Build docker image for ${{ matrix.platform }} [${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}]"
+    name: "Build docker image for ${{ matrix.platform }} [${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}, dry_run=${{ inputs.dry_run }}]"
     permissions:
       contents: read
       packages: write
