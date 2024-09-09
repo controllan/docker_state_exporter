@@ -22,7 +22,7 @@ sudo docker run -d \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -p 8080:8080 \
   $REPO/docker_state_exporter \
-  -listen-address=:8080
+  --web.listen-address=:8080
 ```
 
 For Docker compose.
@@ -66,7 +66,7 @@ and [Process Collector](https://pkg.go.dev/github.com/prometheus/client_golang/p
 
 The polling of docker inspect commands is set to every one second. 
 
-TODO: Allow for polling interval customization.
+TODO: Include container last seen metric - should still show even if container does not exist anymore
 
 ### Build the go binary and container
 
@@ -83,5 +83,5 @@ sudo docker run -d \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -p 8080:8080 \
   docker_state_exporter_test \
-  -listen-address=:8080
+  --web.listen-address=:8080
 ```
