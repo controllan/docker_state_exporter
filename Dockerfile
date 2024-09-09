@@ -16,7 +16,7 @@ WORKDIR $GOPATH/src/docker_state_exporter/
 RUN go mod vendor -v
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/docker_state_exporter
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3
+FROM alpine:3
 
 RUN apk -U --no-cache upgrade
 
