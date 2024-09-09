@@ -39,7 +39,7 @@ run-name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER
 
 jobs:
   build:
-    runs-on: [ self-hosted, ubuntu-latest ]
+    runs-on: [ self-hosted, ubuntu-latest, '${{ vars.RUNNER_LABEL_NAME }}' ]
     name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
     permissions:
       contents: read
