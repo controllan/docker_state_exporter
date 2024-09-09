@@ -1,4 +1,9 @@
-FROM golang:1.22-alpine AS builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.22-alpine AS builder
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
 
 RUN apk update && apk add \
     git \
@@ -9,9 +14,9 @@ COPY *.go go.mod go.sum $GOPATH/src/docker_state_exporter/
 WORKDIR $GOPATH/src/docker_state_exporter/
 
 RUN go mod vendor -v
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/docker_state_exporter
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/docker_state_exporter
 
-FROM alpine:3
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3
 
 RUN apk -U --no-cache upgrade
 
