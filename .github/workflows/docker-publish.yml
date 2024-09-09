@@ -39,15 +39,8 @@ run-name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER
 
 jobs:
   build:
-    strategy:
-      matrix:
-        include:
-          - os: "amd64"
-            image_suffix: ""
-          - os: "arm64"
-            image_suffix: "-arm64"
-    runs-on: [ self-hosted, ubuntu-latest, '${{ matrix.os }}' ]
-    name: "Build docker image for ${{ matrix.os }} [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
+    runs-on: [ self-hosted, ubuntu-latest ]
+    name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
     permissions:
       contents: read
       packages: write
@@ -82,7 +75,7 @@ jobs:
         uses: docker/build-push-action@v6.7.0
         with:
           context: .
-          platforms: 'linux/${{ matrix.os }}'
+          platforms: linux/amd64,linux/arm64
           push: ${{ (github.event_name != 'pull_request' || inputs.force_docker_push) && inputs.dry_run == false  }}
           tags: '${{ steps.meta.outputs.tags || inputs.tags }}${{ matrix.image_suffix }}'
           labels: ${{ steps.meta.outputs.labels || inputs.labels }}
