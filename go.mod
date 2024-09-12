@@ -3,7 +3,7 @@ module github.com/noopdles/docker_state_exporter
 go 1.17
 
 require (
-	github.com/alecthomas/kingpin/v2 v2.3.2
+	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/docker/docker v17.12.0-ce-rc1.0.20200618181300-9dc6525e6118+incompatible
 	github.com/go-kit/log v0.2.1
 	github.com/prometheus/client_golang v1.14.0
