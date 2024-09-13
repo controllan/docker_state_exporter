@@ -26,7 +26,7 @@ The `docker_state_exporter` listens on HTTP port 8080 by default.
 For Docker run.
 
 ```bash
-sudo docker run -d \
+docker run -d \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -p 8080:8080 \
   ghcr.io/controllan/docker-state-exporter \
@@ -96,6 +96,6 @@ docker build . -t docker-state-exporter
 docker run -d \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -p 8080:8080 \
-  docker_state_exporter \
+  docker-state-exporter \
   --web.listen-address=:8080
 ```
