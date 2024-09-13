@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
-	github.com/docker/docker v17.12.0-ce-rc1.0.20200618181300-9dc6525e6118+incompatible
+	github.com/docker/docker 18.09.8
 	github.com/go-kit/log v0.2.1
 	github.com/prometheus/client_golang v1.20.3
 	github.com/prometheus/exporter-toolkit v0.10.0
