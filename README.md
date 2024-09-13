@@ -1,6 +1,14 @@
 # Docker State Exporter
 
-Exporter for docker container state
+Exporter for docker container state.
+
+This repository is an unlinked fork of https://github.com/AdaptiveConsulting/docker_state_exporter and 
+https://github.com/karugaru/docker_state_exporter.
+
+The fork link has been removed due to these reasons:
+- the source repositories are not well maintained as already stated in karugaru/docker_state_exporter
+- this version of the docker state exporter also includes a new metric ``container_combined_status`` which provides the
+health status and general status in one metric to improve the filtering using Prometheus/Grafana
 
 Prometheus exporter for docker container state, written in Go.
 
@@ -21,7 +29,7 @@ For Docker run.
 sudo docker run -d \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -p 8080:8080 \
-  $REPO/docker_state_exporter \
+  ghcr.io/controllan/docker-state-exporter \
   --web.listen-address=:8080
 ```
 
@@ -33,13 +41,21 @@ version: '3.8'
 
 services:
   docker_state_exporter:
-    image: $REPO/docker_state_exporter
+    image: ghcr.io/controllan/docker-state-exporter
     volumes:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
     ports:
       - "8080:8080"
+    command:
+      - --no-add-container-labels # Keep this if you do not wand to add container labels.
+      - --web.listen-address=:8080 # Set the port of the docker state exporter
+    healthcheck:
+      test: "netstat -ltun | grep -c ':8080'"
+      interval: 30s
+      timeout: 10s
+      retries: 3
 ```
 
 ## Metrics
@@ -64,24 +80,22 @@ and [Process Collector](https://pkg.go.dev/github.com/prometheus/client_golang/p
 
 ## Performance
 
-The polling of docker inspect commands is set to every one second. 
+The polling of docker inspect commands is set to every one second.
 
-TODO: Include container last seen metric - should still show even if container does not exist anymore
-
-### Build the go binary and container
+## Build the go binary and container yourself
 
 ```bash
-git clone https://github.com/AdaptiveConsulting/docker_state_exporter
+git clone https://github.com/controllan/docker_state_exporter
 cd docker_state_exporter
-docker build . -t docker_state_exporter_test
+docker build . -t docker-state-exporter
 ```
 
-### Run
+## Run
 
 ```bash
-sudo docker run -d \
+docker run -d \
   -v "/var/run/docker.sock:/var/run/docker.sock" \
   -p 8080:8080 \
-  docker_state_exporter_test \
+  docker_state_exporter \
   --web.listen-address=:8080
 ```
