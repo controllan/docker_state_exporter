@@ -14,6 +14,7 @@ import (
 
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	tcontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/go-kit/log"
@@ -65,7 +66,7 @@ var (
 	restartcountDesc = descSource{
 		"container_restartcount",
 		"Number of times the container has been restarted"}
-	combinedStatusDesc  = descSource{
+	combinedStatusDesc = descSource{
 		namespace + "combined_status",
 		"Combined container status and health status."}
 	lastseenDesc = descSource{
@@ -163,7 +164,8 @@ func (c *dockerHealthCollector) collectMetrics(ch chan<- prometheus.Metric) {
 
 func (c *dockerHealthCollector) collectContainers() {
 	// Get list of containers that currently exist in the docker daemon
-	containers, err := c.containerClient.ContainerList(context.Background(), types.ContainerListOptions{All: true})
+	containers, err := c.containerClient.ContainerList(context.Background(), container.ListOptions{All: true})
+
 	errCheck(err)
 	c.containerInfoCache = []types.ContainerJSON{}
 
