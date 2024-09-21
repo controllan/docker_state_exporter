@@ -37,6 +37,9 @@ on:
 
 run-name: "Build docker image [dry_run=${{ inputs.dry_run }}, ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}]"
 
+env:
+  TEST_TAG: controllan/docker-state-exporter:test
+
 jobs:
   build:
     runs-on: [ self-hosted, ubuntu-latest, '${{ vars.RUNNER_LABEL_NAME }}' ]
@@ -68,6 +71,36 @@ jobs:
         uses: docker/metadata-action@v5.5.1
         with:
           images: ${{ vars.CONTAINER_REGISTRY_URL }}/${{ vars.CONTAINER_REGISTRY_REPOSITORY }}
+
+      # Build test docker image
+      # https://github.com/docker/build-push-action
+      - name: Build test image [${{ env.TEST_TAG }}]
+        uses: docker/build-push-action@v6.7.0
+        with:
+          context: .
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      
+      - name: Run docker image and verify if it is running
+        env:
+          IMAGE_TAG: ${{ env.TEST_TAG }}
+          PORT: ${{ vars.DOCKER_TEST_PORT }}
+          WAIT_TIME: ${{ vars.DOCKER_TEST_WAIT_TIME }}
+        run: |
+          docker compose up -d
+
+          sleep $WAIT_TIME
+
+          HEALTH_STATUS=$(docker inspect --format "{{json .State.Health }}" docker_state_exporter | jq -r ".Status")
+
+          docker compose down -v
+
+          if [ "$HEALTH_STATUS" != "healthy" ]
+          then
+            echo "Docker state exporter has an unhealthy status and therefore seems not to work."
+            exit 1
+          fi
+        shell: bash
 
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
