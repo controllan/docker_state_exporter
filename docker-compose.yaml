@@ -1,0 +1,20 @@
+---
+version: '3.8'
+services:
+  docker_state_exporter:
+    image: ${IMAGE_TAG:-ghcr.io/controllan/docker-state-exporter:latest}
+    container_name: docker_state_exporter
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    ports:
+      - "${PORT:-8080}:${PORT:-8080}"
+    command:
+      - --no-add-container-labels # Keep this if you do not wand to add container labels.
+      - --web.listen-address=:${PORT:-8080} # Set the port of the docker state exporter
+    healthcheck:
+      test: "wget -q -O - localhost:${PORT:-8080}/metrics | grep -q ',status=\"running\"} 1'"
+      interval: 3s
+      timeout: 10s
+      retries: 3
