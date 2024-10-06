@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,7 +18,6 @@ import (
 	"github.com/docker/docker/api/types/container"
 	tcontainer "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
-	"github.com/go-kit/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -173,7 +173,7 @@ func (c *dockerHealthCollector) collectContainers() {
 		// Collect metrics for each container
 		info, err := c.containerClient.ContainerInspect(context.Background(), container.ID)
 		if err != nil {
-			errorLogger.Log("message", err)
+			errorLogger.Error(err.Error())
 			continue
 		}
 		// Append container name to known list of container names
@@ -192,23 +192,15 @@ func (c *dockerHealthCollector) collectContainers() {
 	}
 }
 
-type loggerWrapper struct {
-	Logger *log.Logger
-}
-
-func (l *loggerWrapper) Println(v ...interface{}) {
-	(*l.Logger).Log("messages", v)
-}
-
 // Define loggers.
 var (
-	normalLogger = log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
-	errorLogger  = log.NewJSONLogger(log.NewSyncWriter(os.Stderr))
+	normalLogger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	errorLogger  = slog.New(slog.NewJSONHandler(os.Stderr, nil))
 )
 
 func errCheck(err error) {
 	if err != nil {
-		errorLogger.Log("message", err)
+		errorLogger.Error(err.Error())
 		os.Exit(1)
 	}
 }
@@ -219,10 +211,6 @@ var (
 )
 
 func init() {
-	normalLogger = log.With(normalLogger, "timestamp", log.DefaultTimestampUTC)
-	normalLogger = log.With(normalLogger, "severity", "info")
-	errorLogger = log.With(errorLogger, "timestamp", log.DefaultTimestampUTC)
-	errorLogger = log.With(errorLogger, "severity", "error")
 	prometheus.MustRegister(collectors.NewBuildInfoCollector())
 }
 
@@ -239,7 +227,7 @@ func main() {
 
 	_, err = client.Ping(context.Background())
 	errCheck(err)
-	normalLogger.Log("message", fmt.Sprintf("Cache period is set to %v", *cachePeriod))
+	normalLogger.Info(fmt.Sprintf("Cache period is set to %v", *cachePeriod))
 
 	prometheus.MustRegister(&dockerHealthCollector{
 		containerClient: client,
@@ -255,7 +243,8 @@ func main() {
 
 	http.Handle("/metrics", promhttp.HandlerFor(
 		prometheus.DefaultGatherer,
-		promhttp.HandlerOpts{ErrorLog: &loggerWrapper{Logger: &errorLogger}, EnableOpenMetrics: true}))
+		promhttp.HandlerOpts{ErrorLog: slog.NewLogLogger(normalLogger.Handler(), slog.LevelError),
+			ErrorHandling: promhttp.ContinueOnError, EnableOpenMetrics: true}))
 
 	server := &http.Server{}
 
@@ -269,12 +258,12 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, os.Interrupt)
 	<-quit
-	normalLogger.Log("message", "Server shutting down...")
+	normalLogger.Info("Server shutting down...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		errorLogger.Log("message", fmt.Sprintf("Failed to gracefully shutdown: %d", err))
+		errorLogger.Error(fmt.Sprintf("Failed to gracefully shutdown: %d", err))
 	}
-	normalLogger.Log("message", "Server shutdown")
+	normalLogger.Info("Server shutdown")
 }

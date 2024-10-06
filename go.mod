@@ -7,7 +7,6 @@ toolchain go1.23.1
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/docker/docker v27.3.1+incompatible
-	github.com/go-kit/log v0.2.1
 	github.com/prometheus/client_golang v1.20.4
 	github.com/prometheus/exporter-toolkit v0.13.0
 )
@@ -23,7 +22,6 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/go-logfmt/logfmt v0.5.1 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect

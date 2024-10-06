@@ -73,3 +73,9 @@ build/
 .direnv/
 
 .idea
+
+# Binary files
+docker_state_exporter
+
+# go sum file
+go.sum
