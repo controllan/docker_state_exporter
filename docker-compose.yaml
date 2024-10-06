@@ -1,5 +1,4 @@
 ---
-version: '3.8'
 services:
   docker_state_exporter:
     image: ${IMAGE_TAG:-ghcr.io/controllan/docker-state-exporter:latest}

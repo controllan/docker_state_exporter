@@ -9,10 +9,11 @@ RUN apk update && apk add \
     git \
     ca-certificates
 
-COPY *.go go.mod go.sum $GOPATH/src/docker_state_exporter/
+COPY *.go go.mod $GOPATH/src/docker_state_exporter/
 
 WORKDIR $GOPATH/src/docker_state_exporter/
 
+RUN go mod tidy
 RUN go mod vendor -v
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -a -installsuffix cgo -ldflags="-w -s" -o /go/bin/docker_state_exporter
 
