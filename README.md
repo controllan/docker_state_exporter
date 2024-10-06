@@ -38,10 +38,10 @@ For Docker compose.
 ```yaml
 ---
 version: '3.8'
-
 services:
   docker_state_exporter:
-    image: ghcr.io/controllan/docker-state-exporter
+    image: ghcr.io/controllan/docker-state-exporter:latest
+    container_name: docker_state_exporter
     volumes:
       - type: bind
         source: /var/run/docker.sock
