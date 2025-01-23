@@ -6,7 +6,7 @@ toolchain go1.23.1
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
-	github.com/docker/docker v27.4.1+incompatible
+	github.com/docker/docker v27.5.1+incompatible
 	github.com/prometheus/client_golang v1.20.5
 	github.com/prometheus/exporter-toolkit v0.13.2
 )
