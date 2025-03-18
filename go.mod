@@ -1,13 +1,12 @@
 module github.com/noopdles/docker_state_exporter
 
 go 1.22
-
-toolchain go1.23.1
+toolchain go1.24.1
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
-	github.com/prometheus/client_golang v1.21.1
 	github.com/docker/docker v28.0.1+incompatible
+	github.com/prometheus/client_golang v1.21.1
 	github.com/prometheus/exporter-toolkit v0.14.0
 )
 
@@ -49,12 +48,12 @@ require (
 	go.opentelemetry.io/otel/metric v1.30.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.3.0 // indirect
 	go.opentelemetry.io/otel/trace v1.30.0 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/net v0.33.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11 // indirect
 	google.golang.org/grpc v1.58.3 // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
