@@ -6,7 +6,7 @@ toolchain go1.23.1
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
-	github.com/docker/docker v28.0.2+incompatible
+	github.com/docker/docker v28.1.1+incompatible
 	github.com/prometheus/client_golang v1.22.0
 	github.com/prometheus/exporter-toolkit v0.14.0
 )
@@ -30,6 +30,7 @@ require (
 	github.com/mdlayher/socket v0.4.1 // indirect
 	github.com/mdlayher/vsock v1.2.1 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
+	github.com/moby/sys/atomicwriter v0.1.0 // indirect
 	github.com/moby/term v0.5.0 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
